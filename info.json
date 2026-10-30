@@ -1,0 +1,10 @@
+{
+  "name": "combat-reconfigured",
+  "version": "0.1.0",
+  "title": "Combat Reconfigured",
+  "author": "Astro704",
+  "homepage": "",
+  "description": "Customize the vanilla gun turret through startup settings. Vanilla behavior is preserved at defaults. English and Simplified Chinese settings are included.",
+  "factorio_version": "2.1",
+  "dependencies": ["base >= 2.1.24"]
+}

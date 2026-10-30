@@ -1,0 +1,13 @@
+---------------------------------------------------------------------------------------------------
+Version: 0.1.0
+Date: 2026-10-30
+  Features:
+    - Add 51 native startup settings for the existing vanilla gun turret in Factorio 2.1.
+    - Configure range, firing, ammunition, preparation, targeting, health, resistances and utility properties.
+    - Preserve official prototype data at defaults, along with native research and quality behavior.
+    - Add English and Simplified Chinese setting names and descriptions.
+  Changes:
+    - Keep freezing settings conditional on the official freezing feature.
+    - Document extreme-range costs, native mechanism limits and existing-save behavior.
+  Testing:
+    - Add isolated headless integration checks using the installed Factorio executable.

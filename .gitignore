@@ -2,3 +2,5 @@
 .DS_Store
 temp.*
 temp/
+__pycache__/
+*.pyc
