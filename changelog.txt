@@ -1,4 +1,20 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.0
+Date: 2026-10-30
+  Features:
+    - Expand the internal experiment to 2,348 Space Age / 1,777 base startup settings.
+    - Cover all native player guns and turrets, vehicle combat, ammunition, capsules, robots, equipment and defenses.
+    - Expose shared projectiles, beams, streams, fire, poison, stickers and tesla chains with explicit scope.
+    - Retain the original 51 gun turret identifiers and exact no-op defaults.
+    - Add an English parameter inventory with native paths, defaults, units, consumers and exclusions.
+  Changes:
+    - Preserve base/Space Age action topology with explicit base-path mappings.
+    - Extend insufficient embedded beam and preparation limits after range changes unless explicitly overridden.
+    - Gate freezing and armor flight features; retain native technology and quality mechanics.
+  Testing:
+    - Add complete catalog mutation/isolation checks and real combat scenarios for distinct mechanisms.
+
+---------------------------------------------------------------------------------------------------
 Version: 0.1.0
 Date: 2026-10-30
   Features:

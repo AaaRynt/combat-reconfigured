@@ -60,7 +60,7 @@ def setup(folder, enabled=True, expansion=False, overrides=None):
     mods = folder / "mods"
     mods.mkdir(parents=True)
     if enabled:
-        target = mods / "combat-reconfigured_0.1.0"
+        target = mods / ("combat-reconfigured_" + json.loads((ROOT / "info.json").read_text())["version"])
         target.mkdir()
         for name in ["info.json", "settings.lua", "data-final-fixes.lua", "prototypes", "locale"]:
             source = ROOT / name
@@ -83,7 +83,7 @@ def setup(folder, enabled=True, expansion=False, overrides=None):
             "local overrides = " + lua(overrides) + "\n"
             "for key, value in pairs(overrides) do\n"
             "  for _, kind in ipairs({'double-setting', 'int-setting', 'bool-setting', 'string-setting'}) do\n"
-            "    local setting = data.raw[kind] and data.raw[kind]['cr-gun-turret-' .. key]\n"
+            "    local setting = data.raw[kind] and data.raw[kind][string.sub(key, 1, 3) == 'cr-' and key or ('cr-gun-turret-' .. key)]\n"
             "    if setting then setting.default_value = value end\n"
             "  end\nend\n")
         entries.append({"name": "cr-check", "enabled": True})
@@ -101,7 +101,7 @@ def check_locale():
         assert len(names) == 51
         locales.append(names)
     assert locales[0] == locales[1]
-    assert json.loads((ROOT / "info.json").read_text())["version"] == "0.1.0"
+    assert json.loads((ROOT / "info.json").read_text())["version"] == "0.2.0"
 
 
 def main():

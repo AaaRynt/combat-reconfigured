@@ -38,6 +38,8 @@ for _, definition in ipairs(definitions) do
   end
 end
 
+require("prototypes.apply-catalog")
+
 -- A reversed interval would make the turret unable to acquire targets.
 local attack = turret.attack_parameters
 if (attack.min_range or 0) > attack.range then
