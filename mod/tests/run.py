@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Public v0.3.0 validation; no builds, extra dependencies, player mods or saves."""
+"""Public v1.0.0 validation; no builds, extra dependencies, player mods or saves."""
 import argparse
 import configparser
 import importlib.util
@@ -23,10 +23,14 @@ def main():
     else:
         temporary=tempfile.TemporaryDirectory(prefix='combat-public-');work=Path(temporary.name)
 
+    info=json.loads((ROOT/'info.json').read_text())
+    mod_folder=info['name']+'_'+info['version']
+    vanillas={}
+
     def run(name,expansion=False,enabled=True,overrides=None,scenario=None,test_arg=None,shot_counter=False,package=None):
         folder=work/name;mods=support.setup(folder,enabled,expansion,overrides)
         if package:
-            shutil.rmtree(mods/'combat-reconfigured_0.3.0')
+            shutil.rmtree(mods/mod_folder)
             shutil.copy2(package,mods/package.name)
         if shot_counter:
             shutil.copy2(ROOT/'tests/shot-counter.lua',mods/'cr-check_0.0.1/data-final-fixes.lua')
@@ -52,12 +56,13 @@ def main():
         cfg=configparser.ConfigParser(interpolation=None,delimiters=('=',),strict=True)
         cfg.read(ROOT/'locale'/language/'settings.cfg');locales.append(cfg)
     assert {s:set(locales[0][s]) for s in locales[0].sections()}=={s:set(locales[1][s]) for s in locales[1].sections()}
-    assert json.loads((ROOT/'info.json').read_text())['version']=='0.3.0'
+    assert json.loads((ROOT/'info.json').read_text())['version']=='1.0.0'
     for file in [ROOT/'settings.lua',ROOT/'data-final-fixes.lua',*(ROOT/'prototypes').glob('*.lua')]:
         assert 'experiments' not in file.read_text(),file
     for expansion in [False,True]:
         suffix='space-age' if expansion else 'base'
         vanilla,_=run('vanilla-'+suffix,expansion,False)
+        vanillas[suffix]=vanilla
         actual,settings=run('defaults-'+suffix,expansion)
         assert actual==vanilla,'Every prototype must equal vanilla at defaults'
         assert len(settings)==(87 if expansion else 63),len(settings)
@@ -117,11 +122,17 @@ def main():
     print('PASS measured native resource costs and doubled damage in 11 combat cases',flush=True)
     spec=importlib.util.spec_from_file_location('package',ROOT/'scripts/package.py')
     packaging=importlib.util.module_from_spec(spec);spec.loader.exec_module(packaging)
-    artifact=packaging.create(work/'combat-reconfigured_0.3.0.zip')
-    packaged,_=run('packaged-defaults',True,package=artifact)
-    assert packaged==vanilla,'Packaged default prototypes must equal Space Age vanilla'
-    run('packaged-combat',True,scenario='combat.lua',package=artifact)
-    print('PASS explicit ZIP contents, source bytes and installed ZIP combat',flush=True)
+    artifact=packaging.create(work/(mod_folder+'.zip'))
+    for expansion in [False,True]:
+        suffix='space-age' if expansion else 'base'
+        packaged,_=run('packaged-defaults-'+suffix,expansion,package=artifact)
+        assert packaged==vanillas[suffix],'Packaged defaults must equal vanilla: '+suffix
+        if expansion:
+            run('packaged-combat-'+suffix,True,scenario='combat.lua',package=artifact)
+        else:
+            run('packaged-combat-'+suffix,overrides={'cr-artillery-range':100,'cr-artillery-manual-range':300},
+                scenario='artillery.lua',package=artifact)
+    print('PASS explicit ZIP contents, source bytes and installed ZIP combat in base and Space Age',flush=True)
     if args.keep:print('Test files:',work)
 
 if __name__=='__main__':main()

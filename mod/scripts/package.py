@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 FILES = (
     'info.json', 'settings.lua', 'data-final-fixes.lua', 'prototypes/weapons.lua',
     'locale/en/settings.cfg', 'locale/zh-CN/settings.cfg',
-    'README.md', 'TESTING.md', 'changelog.txt', 'LICENSE',
+    'README.md', 'changelog.txt', 'LICENSE',
 )
 
 

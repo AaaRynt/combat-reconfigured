@@ -1,8 +1,10 @@
 # Combat Reconfigured experimental edition
 
-This editable research edition exposes **2,348 Space Age / 1,777 base startup settings** for Factorio 2.1.24, including the original 51 gun turret controls. Experimental metadata uses version **0.0.0** and an explicit experimental title. Its changes are tracked in `changelog.txt` as a single experimental edition.
+This unpublished, unsupported research edition exposes **2,348 Space Age / 1,777 base startup settings** for Factorio 2.1.24, including the original 51 gun turret controls. Experimental metadata uses the internal research version **0.0.0**, independent of the public release number, and an explicit experimental title. Its changes are tracked in `changelog.txt` as a single experimental edition.
 
-Read the [parameter inventory](PARAMETERS.md) for setting IDs, native paths, defaults, units, shared consumers and exclusions, and the [validation notes](TESTING.md) for evidence and limitations. See the [public mod README](../README.md) for the supported release and the [public validation notes](../TESTING.md) for its separate checks.
+Read the [parameter inventory](PARAMETERS.md) for setting IDs, native paths, defaults, units, shared consumers and exclusions, and the [validation notes](TESTING.md) for evidence and limitations. See the [public mod README](https://github.com/AaaRynt/combat-reconfigured/blob/master/mod/README.md) for the supported release and the [public validation notes](https://github.com/AaaRynt/combat-reconfigured/blob/master/mod/TESTING.md) for its separate checks.
+
+Both editions are self-contained: this directory includes its own metadata, prototypes, locale files, license and tests, and does not read files from `mod/`. See the [project overview](https://github.com/AaaRynt/combat-reconfigured/blob/master/README.md) for the repository layout.
 
 ## Files
 
@@ -14,10 +16,10 @@ Read the [parameter inventory](PARAMETERS.md) for setting IDs, native paths, def
 
 ## Research use
 
-Copy the contents of this directory to a separate development mod folder, then follow the [validation instructions](TESTING.md). Do not enable this experimental edition alongside the public mod: both intentionally use the same mod name. There is no public switch to load experimental code. Public entry points never import this directory, and the release ZIP excludes it, its tests and its generator. The project [MIT license](../LICENSE) applies.
+For research, copy this directory to an isolated mods directory as `combat-reconfigured_0.0.0` with info.json directly inside it, then follow the [validation instructions](TESTING.md). Do not install this edition alongside the public mod or leave duplicate copies in the same mods directory: both intentionally use the internal mod name `combat-reconfigured`. Remove the public copy before switching, or use separate Factorio user-data/mod directories. Startup settings are not automatically migrated between editions. There is no public switch to load experimental code. Public entry points never import this directory, and the release ZIP excludes it, its tests and its generator. The project [MIT license](LICENSE) applies.
 
 ## Scope and limits
 
 The experiment includes guns, turrets, vehicle combat, ammunition, capsules, robots, equipment, armor, defenses and shared projectile/beam/stream/fire/sticker/chain effects. Weapon-local settings stay local; shared resource edits can affect multiple weapons and sometimes enemies or environmental effects. Inspect the [consumer inventory](PARAMETERS.md) before editing shared effects.
 
-Exact vanilla defaults, prototype mappings and selected native combat mechanisms were checked in the original research. These do not prove every state/quality/research combination, multiplayer or large-factory performance. Extreme ranges and branching can exhaust CPU/memory; the million-tile experimental input ceiling is not a safety guarantee. A prior 10,000-tile map attempt exceeded the runner's 2 GiB memory guard. Public bounds and supported features are described separately in the [public README](../README.md).
+Exact vanilla defaults, prototype mappings and selected native combat mechanisms were checked in the original research. These do not prove every state/quality/research combination, multiplayer or large-factory performance. Extreme ranges and branching can exhaust CPU/memory; the million-tile experimental input ceiling is not a safety guarantee. A prior 10,000-tile map attempt exceeded the runner's 2 GiB memory guard. Public bounds and supported features are described separately in the [public README](https://github.com/AaaRynt/combat-reconfigured/blob/master/mod/README.md).

@@ -2,7 +2,7 @@
 
 Validated on **2026-10-30 and 2026-10-31** with **Factorio 2.1.24, build 87808, mac-arm64**, official content and the matching offline API. Checks cover exact base/Space Age defaults, all 51 original gun turret controls, bounds/clamping, research/quality, zero ammo, long-range combat, existing-save reload and 15 native combat mechanisms. The refresher reproduces the catalog definitions and test manifest in an isolated copy, retaining all 2,348 entries in each language's locale file.
 
-All runs use isolated config/mod/scenario/save directories. Player saves, installed mods and account credentials are not used. No build command or additional dependency is required. See the [experimental README](README.md), [parameter inventory](PARAMETERS.md) and [public validation notes](../TESTING.md).
+All runs use isolated config/mod/scenario/save directories. Player saves, installed mods and account credentials are not used. No build command or additional dependency is required. See the [experimental README](README.md), [parameter inventory](PARAMETERS.md) and [public validation notes](https://github.com/AaaRynt/combat-reconfigured/blob/master/mod/TESTING.md).
 
 ## Exact defaults and registration
 
