@@ -1,71 +1,54 @@
-# Combat Reconfigured 0.2.0 validation
+# Combat Reconfigured 0.3.0 validation
 
-Checked on 2026-10-30 using the installed **Factorio 2.1.24, build 87808, mac-arm64** and matching official offline prototype/runtime API. All runs use isolated config/mod/scenario/save directories. Player saves, installed mods, account credentials and third-party mods are not used. No build command or additional dependency is required.
+Validated on **2026-10-31** with **Factorio 2.1.24, build 87808, mac-arm64**, official base/Space Age data and the matching offline API. The runner uses isolated mod, configuration and scenario directories. It does not read or modify player saves or installed mods. No build commands or extra dependencies are required.
 
-## Exact defaults and registration
+## Prototype and settings checks
 
-- All exported prototypes are exactly equal to vanilla with default settings, both in base and official Space Age configurations. This checks the entire exported prototype data, not just selected weapon numbers.
-- Base game registers 1,777 settings; Space Age registers 2,348. Counts include feature-hidden freezing controls. All registered IDs, types and declared defaults are checked against the catalog.
-- Every catalog setting has English and Simplified Chinese labels and descriptions. Native translated item/entity/equipment names are used where available, with a resource identifier fallback.
-- The original 51 gun turret IDs and regression tests remain. Feature-only prototypes are not registered without their content. Armor flight requires space travel, and heating is gated by freezing.
+`python3 tests/run.py` checks both base game and official Space Age configurations:
 
-## Modification and isolation checks
+- Every exported prototype is exactly equal to vanilla at default public settings, including absent optional fields.
+- Base registers 63 public numeric startup settings; Space Age registers 87. The gun turret has exactly four. No hidden experimental settings are registered.
+- Defaults, minimum/maximum bounds and native target paths are independently checked against vanilla exports. Every control is changed to a distinct test value (with integer/fractional exceptions where appropriate), and the full prototype export must match vanilla plus only the expected edits.
+- All settings are loaded together at their minimum inputs, then at their maximum inputs. Shared Spidertron mutations must update all four launchers, and shared rotation mutations must update both artillery entities. Full export comparisons also cover the dependency edits needed for native beams, preparation, artillery ratios and energy buffers. This proves valid prototype loading, not high-load performance at all maxima.
+- Additional isolated gun, laser, fluid, artillery, shared Spidertron, Tesla and railgun/shared-ammo edits verify their exact intended scope. English and Simplified Chinese locale sections/keys must match.
+- Public entry points must not reference experiments. The editable [experimental edition](experiments/README.md) has its own locale/completeness checks; public regression tests do not freeze its contents.
+- Factorio's unused-prototype-data diagnostic is enabled during runs.
 
-`tests/experimental.py` changes every additional catalog control, one prototype family per isolated game process, in both supported official content configurations. Each changed field is read back from the real engine export. The entire result is compared against vanilla plus the exact intended paths; unrelated fields and prototypes must be unchanged. Energy strings are compared as absolute J/W values. Resistance edits are checked by damage type.
+## Actual native combat
 
-The manifest records 28 base-versus-Space-Age structural path differences. These include action arrays whose indices or singleton/list representation differ. Mapping tests exercise the correct path for each mode rather than assuming the expansion data is identical to base data.
+| Scenario                           | Observed behavior required                                                                                                                                                                                                                                                                                                                                                      |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Gun turret, default and configured | Ammo and turret damage research multiply the configured coefficient; measured shot intervals retain shooting-speed research. Normal/rare/legendary inside/outside range tests retain quality bonuses. Inventory and normal/legendary health remain native. Ammo coefficient 0 preserves loaded ammunition.                                                                      |
+| Expanded weapon ranges             | Laser, flamethrower and Tesla turrets hit targets at 45 tiles with range 50; both railguns hit at 60 with targeting 70 and shared line 80; pistol hits at 25 with range 30; handheld flamethrower hits at 20 with range 25; Tesla gun hits at 35 with range 40. Rocket turret, shotgun, rocket launcher and both artillery forms also deal actual damage. Thirteen cases total. |
+| Ordinary input range ceiling       | With normal quality and no research, a gun turret configured to range 256 hits at 250 tiles and does not hit at 270.                                                                                                                                                                                                                                                            |
+| Artillery automatic/manual split   | Turret and wagon configured to automatic 100/manual 300 hit automatically at 90. Separate targets at 200 receive no damage before native manual artillery flares are created, and are then hit. Targets at 320 remain unhit even after manual flares.                                                                                                                           |
+| Artillery rotation                 | Measure native barrel orientation increments: one shared 90 degrees/s setting must apply to both turret and wagon.                                                                                                                                                                                                                                                              |
+| Artillery damage radius            | Both native turret and wagon shells hit targets offset 7 tiles from impact with radius 8, but not with default radius 4. Offset 12 remains outside both. Target collision boxes remain native.                                                                                                                                                                                  |
+| Resource costs and weapon damage   | Eleven cases measure native costs at positive and zero inputs; doubling each weapon coefficient must double its first damage event against a test target with resistances removed.                                                                                                                                                                                              |
 
-Dedicated checks also verify that:
+Resource cases cover gun turret, pistol, laser turret, Tesla turret, railgun turret, flamethrower turret, handheld flamethrower, artillery turret, artillery wagon, Tesla gun and handheld railgun. The fixture appends a test-only instantaneous launch marker without replacing native attack actions. Single-round weapons fire twice; the others fire once. It then compares native inventory round counts, electric buffer debits (less idle drain) or fluid reservoir debits with the configured cost multiplied by measured launches.
 
-- Increased laser range extends the embedded beam delivery limit without changing the shared beam prototype.
-- Increased flamethrower range extends an insufficient preparation radius.
-- Explicit beam length overrides take precedence over automatic extension.
-- Reversed minimum range is clamped to maximum range, with a log.
-- Fire initial lifetime is clamped to maximum lifetime.
-- Factorio's unused-prototype-data diagnostics do not report unused catalog paths in the exercised configurations.
+Positive checks include doubled firearm/Tesla/flamethrower ammo cost, fractional **0.5** railgun/artillery ammo costs, laser **1.6 MJ**, Tesla turret **24 MJ**, railgun turret **20 MJ** and flamethrower turret **2 fluid units** per shot. Zero-cost checks retain loaded ammo/fluid and supplied energy, and double weapon damage coefficients. Native stream/fire behavior remains; the comparison uses the first damage event, not a claim of equal long-term damage against every target type.
 
-## Actual combat, separate from prototype checks
+The test supplies energy/fluid directly to isolate attacks and cost accounting. It does not validate an entire power or pipe network. Test markers, target resistance changes and scenario code are excluded from the public ZIP.
 
-`tests/mechanisms.py` runs a 900-tick headless scenario and requires positive damage events from each of these 15 cases:
+## Installation artifact
 
-| Mechanism | Actual observation required |
-| --- | --- |
-| Laser turret | Hits a target 45 tiles away with configured range 50, beyond its vanilla range. |
-| Flamethrower turret | Hits a target 45 tiles away with configured range 50, supplied with light oil. This also exercises preparation-range extension and stream travel. |
-| Rocket turret | Fires loaded rocket items and damages its target. |
-| Tesla turret | Hits a target 45 tiles away with configured range 50 using its native chain attack. |
-| Railgun turret | Hits a target 60 tiles away with targeting range 70 and shared ammo line range 80. |
-| Artillery turret | Automatically fires at and damages an enemy spawner. |
-| Artillery wagon | Placed on rails, automatically fires at and damages an enemy spawner. |
-| Defender robot | Acquires and damages an enemy target. |
-| Pistol | A character fires loaded magazines at a target 25 tiles away with configured range 30. |
-| Handheld railgun | A character fires the native line attack at a target 60 tiles away, using the configured gun and ammo ranges. |
-| Shotgun | A character fires pellets and damages its target. |
-| Rocket launcher | A character launches loaded rockets and damages its target. |
-| Handheld flamethrower | A character consumes loaded flamethrower ammo and damages its target through streams/fire. |
-| Land mine | Arms and damages a nearby enemy unit. |
-| Personal laser equipment | Installed in a character's armor grid and supplied with energy, damages its target. |
+`scripts/package.py` creates a deterministic ZIP from exactly ten public files. It verifies every ZIP member and its bytes against source. The runner installs that ZIP into an isolated mod directory, compares its default Space Age prototypes with vanilla, and runs gun research/quality combat from the installed ZIP. Experiments, tests, scripts, temporary data, caches and Git metadata must not be shipped.
 
-Energy/fluid supply is maintained by the test scenario to isolate attack behavior. These tests prove actual target engagement and damage, not detailed power-network balance or measured fluid throughput.
+## Limits
 
-The retained `tests/run.py` suite additionally verifies gun turret ammo/turret damage research multiplication, measured shooting-speed research, normal/rare/legendary range boundaries and health, inventory slots, and zero ammunition consumption. It saves a vanilla gun turret and reloads it with the mod enabled: unit identity, ammo and native health ratio are retained while new settings apply. It also checks 1,000-tile real combat and 10,000-tile prototype loading in base and Space Age.
+These tests distinguish prototype mapping from actual combat evidence. Vehicle driving/aiming, all four Spidertron launchers in action, every supported weapon at every input limit, Tesla branching distributions, every quality/research combination, live UI presentation, multiplayer and large-factory UPS are not separately tested. No third-party mod compatibility is claimed.
 
-## Limits and unverified behavior
+Input ceilings are conservative product limits, not a guaranteed frame-rate or total-entity budget. Native research, quality and ammo modifiers are preserved and can exceed the effective range/rate implied by a base input limit. High firing rates and many chain effects can still be costly. The [experimental edition](experiments/README.md)'s extreme-range experiments are not v0.3.0 performance evidence.
 
-- Not every catalog field has a dedicated behavioral combat assertion. The all-catalog suite proves registration, data-stage mapping and isolation; it must not be described as actual-combat verification of all 2,348 controls.
-- Direct vehicle driving/aiming, every Spidertron launcher in combat, capsule throwing through the player UI, capture completion, poison-cloud balance, shield regeneration, discharge remote behavior, each resistance formula, and every state/quality/research combination are not separately validated in combat. Their applicable catalog mappings and engine loading are covered.
-- The tests do not measure exact energy/flow consumption against a live power/pipe network, long-run performance, or behavior at every numeric extreme. Some settings intentionally affect a native conditional state which may not occur in a given scenario.
-- Shared ammo/beam/fire/sticker changes can affect multiple weapon types, and sometimes enemies or environmental fire. Consumers and exact paths are listed in PARAMETERS.md. This is explicit scope, not per-weapon isolation of a shared resource.
-- A prior 10,000-tile actual-map attempt exceeded the runner's 2 GiB resident-memory guard during map initialization. Prototype loading at that range passed; playable operation at 10,000 or up to the million-tile input guard is not established. High repeat/branch counts can similarly exhaust resources.
-- The settings screen has not been manually reviewed for scrolling/search performance with thousands of controls. Multiplayer clients and third-party mods are not tested. Only the local 2.1.24 engine is validated.
-- Mech armor flight cannot be disabled independently of its collision/drawing boxes. Fluid turret fuel checks are forced by the engine. Nonzero capsule warmup is invalid. These options are omitted rather than presented as independent working controls.
+The internal experimental setting IDs are not migrated. Public defaults remove their former modifications. Existing-save migration from every experimental combination is not tested; review startup settings when changing versions.
 
 ## Reproduce
 
 ```sh
-python3 tests/run.py
-python3 tests/experimental.py
-python3 tests/mechanisms.py
+python3 tests/run.py --keep /new/test/directory
+python3 scripts/package.py --output /path/to/combat-reconfigured_0.3.0.zip
 ```
 
-The macOS default executable is `/Applications/factorio.app/Contents/MacOS/factorio`. `tests/run.py` accepts `--factorio` and `--data`; the two additional test runners currently use that macOS installation. The regression/catalog runners accept `--keep /new/test/directory`. Each process has a 60-second timeout and 2 GiB resident-memory guard. The vanilla-save check uses a private loopback-only server on an assigned port.
+The default executable is `/Applications/factorio.app/Contents/MacOS/factorio`; use `--factorio` and optional `--data` for other installations. Each process has a 60-second timeout and a 2 GiB resident-memory guard. Paths must point to matching official content.

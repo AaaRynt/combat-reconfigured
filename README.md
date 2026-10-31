@@ -1,71 +1,102 @@
 # Combat Reconfigured
 
-**0.2.0 is an internal experimental version for Factorio 2.1.24.** It exposes native startup settings for the player weapons and combat facilities in the base game and Space Age. The MIT license, project identity and author are unchanged.
+**v0.3.0** provides focused startup settings for the existing guns and turrets in **Factorio 2.1**, with optional **Space Age** support. Validated with Factorio **2.1.24**. English and Simplified Chinese setting names and explanations are included.
 
-With Space Age enabled there are **2,348 settings across 128 configurable prototype records**. Base game registers **1,777 settings**, including feature-hidden controls. The original 51 gun turret setting identifiers are retained. This deliberately large catalog is intended for individual experiments and later selection, not a finalized public interface.
+The public interface has **63 settings in base game / 87 with Space Age** across 15 / 20 weapon configuration groups. Most weapons have four controls: maximum range, shot interval, damage coefficient and the appropriate resource cost. The gun turret has **exactly these four**. Space Age-only controls are absent without the expansion.
 
-## Coverage
+Compared with v0.2.0, the public interface is reduced from 1,777 / 2,348 experimental settings to the focused controls above. Spidertron uses one shared launcher group, and artillery turret/wagon settings are shared. Broad entity and combat-effect controls remain available only in the [experimental edition](experiments/README.md). See [upgrade guidance](#upgrade-from-v020) for setting-ID changes.
 
-- All 17 native gun prototypes: eight handheld weapons, car/tank guns, four independent Spidertron launchers, and the shared artillery gun.
-- All seven turrets: gun, laser, flamethrower, artillery, rocket, tesla and railgun.
-- Car, tank, Spidertron and artillery wagon combat properties; land mines, walls and gates.
-- Throwing capsules, grenades, combat robots, capture robots, personal laser/discharge equipment, shields and armor. Healing/buff consumables and cliff explosives are included; the two remotes have no separate numeric attack controls.
-- All 17 ammunition prototypes and the player-combat resource graph: projectiles, beams, streams, fire, poison cloud, stickers and tesla chains.
+## Install and configure
 
-The independent English [parameter inventory](PARAMETERS.md) lists every setting, exact native property path, default, units, meaning, resource consumers and exclusions. A record is a prototype, not necessarily a distinct weapon: for example, a grenade capsule and its projectile are separate records.
+Copy `combat-reconfigured_0.3.0.zip` into Factorio's user-data `mods` directory. On macOS this is normally `~/Library/Application Support/factorio/mods`. Keep one installed copy of Combat Reconfigured. Enable it, then use **Settings → Mod settings → Startup** and restart when prompted. The game may offer to synchronize startup settings with a save; check the resulting values after synchronization.
 
-## Use
+Defaults leave **every vanilla prototype unchanged**. Changed values are base values, applied through the native prototypes. Research, quality and ammunition effects continue to work. There is no runtime script, per-tick scan, new entity, recipe or technology.
 
-Copy `combat-reconfigured_0.2.0.zip` into the user data `mods` directory, enable the mod, and open **Settings → Mod settings → Startup**. Apply changes and restart when prompted. On macOS the usual location is `~/Library/Application Support/factorio/mods`. Keep only one installed copy of this mod active. Loading a save with its saved startup settings can restore older values.
+## Supported weapons and defaults
 
-Settings are organized by family and prototype. Their names use native translated item/entity names where available, followed by the property and nested path. English and Simplified Chinese labels/descriptions are supplied. Search by weapon name, property or resource identifier. Shared resources are marked **[shared]** / **[共享]**.
+Range is in tiles; interval is in ticks (60 ticks = 1 second). Damage is the weapon's native coefficient. Resource costs are per shot; ammo values are coefficients, fluid values are units, and energy values below are shown in MJ for readability. The settings screen takes energy in **J**, where 1 MJ = 1,000,000 J.
 
-Defaults are exact no-ops: the mod does not write unchanged values or materialize optional fields. Native research, ammunition categories, entity identities and quality prototypes are retained. Settings modify existing and newly created entities through their original prototypes. There is no custom GUI, control script, per-tick scan, or new dependency.
+| Weapon                                      | Range | Interval | Damage | Resource cost    |
+| ------------------------------------------- | ----: | -------: | -----: | ---------------- |
+| Gun turret                                  |    18 |        6 |      1 | Ammo 1           |
+| Laser turret                                |    24 |       40 |      2 | 0.8 MJ           |
+| Flamethrower turret                         |    30 |        4 |      1 | Fluid 0.2        |
+| Rocket turret (Space Age)                   |    36 |      120 |      1 | Ammo 1           |
+| Tesla turret (Space Age)                    |    30 |      120 |      1 | 12 MJ            |
+| Railgun turret (Space Age)                  |    40 |      170 |      1 | Ammo 1 and 10 MJ |
+| Pistol                                      |    15 |       15 |      1 | Ammo 1           |
+| Submachine gun                              |    18 |        6 |      1 | Ammo 1           |
+| Shotgun                                     |    15 |       40 |      1 | Ammo 1           |
+| Combat shotgun                              |    15 |       30 |    1.5 | Ammo 1           |
+| Rocket launcher                             |    36 |       60 |      1 | Ammo 1           |
+| Handheld flamethrower                       |    15 |        1 |      1 | Ammo 1           |
+| Handheld railgun (Space Age)                |    40 |      120 |      1 | Ammo 1           |
+| Tesla gun (Space Age)                       |    24 |       60 |      1 | Ammo 1           |
+| Car machine gun                             |    20 |        4 |      1 | Ammo 1           |
+| Tank machine gun                            |    20 |        4 |      1 | Ammo 1           |
+| Tank cannon                                 |    30 |       90 |      1 | Ammo 1           |
+| Tank flamethrower                           |     9 |        1 |      1 | Ammo 1           |
+| Artillery turret and wagon (shared gun)     |   224 |      200 |      1 | Ammo 1           |
+| Spidertron launchers 1–4 (one shared group) |    36 |       60 |      1 | Ammo 1           |
 
-## Mechanisms and dependencies
+Special controls include shared artillery turret/wagon rotation speed, a shared artillery shell damage radius, artillery manual range (default **560**), Tesla chain jumps (turret **10**, handheld **12**) and the shared railgun ammunition line length (**50**). Railgun turrets expose both ammunition and electrical cost. All artillery controls affect turret and wagon together, including one shared cannon rotation setting. Shared shell damage radius defaults to 4 tiles. The shared cannon rotation input defaults to 21.6 degrees/second (0.001 turns/tick).
 
-- Weapon-local damage and consumption coefficients stay local. Ammo item, projectile, beam, fire and sticker controls affect **all consumers** of that shared resource. These are separate, explicit settings; there are no silent copies or global ammo rewrites from a weapon setting. The inventory identifies direct consumers, including enemy/environmental users of shared effects when present.
-- Laser/tesla/robot/equipment beam delivery limits live inside their attacks. Increasing an attack range raises an insufficient embedded beam length unless that length is explicitly configured. For a turret with an explicit preparation radius, a range increase also raises an insufficient preparation radius unless explicitly configured.
-- Railgun targeting range and the shared ammunition's **line attack range** are independent. Change both when researching longer actual line attacks. Artillery turret and wagon share `artillery-wagon-cannon`; their manual range coefficients belong to each entity. Ammo range modifiers do not extend artillery range in the native engine.
-- Flamethrower fluid supply, buffer size, activation threshold and consumption are separate controls. Crude/heavy/light oil damage coefficients are separate. Stream flight physics and shared ground-fire/sticker damage are distinct from turret attack coefficients.
-- Tesla gun and turret have separate chain prototypes. Jump count, reach, delay and branching are configurable, including the native quality-dependent fork increment. No quality or research bonus is replaced by scripts.
-- Reversed minimum/maximum attack ranges are clamped and logged. Initial fire lifetime is clamped to its maximum. Exponential projectile turning is kept disabled if acceleration remains zero. Negative sentinel values preserve native unlimited/disabled defaults. Explicit research choices such as a short beam limit or preparation radius take precedence over automatic extension.
-- Freezing settings require the freezing feature; armor flight settings require space travel. Mech armor's flight flag is coupled to its native collision/drawing boxes and is not independently exposed. The fluid turret's engine-forced fuel check is omitted. Capsule warmup is omitted because nonzero capsule warmup is invalid.
+Grenades, capsules, land mines, combat robots, equipment, armor, walls and general vehicle properties have no public controls. Health, regeneration, resistances, repair, general rotation controls (except artillery), preparation timing, alerts, targeting scores, effect physics and visual controls have been removed. Their original behavior remains enabled.
 
-## Experimental limits
+## Input limits
 
-Back up saves before changing inventory sizes; shrinking an inventory can discard items. Current health and ammunition in saved entities remain engine-managed. Native health-ratio preservation was tested on a saved gun turret.
+The settings screen enforces inclusive bounds and shows them in each description. Limits apply to **base inputs**, before native bonuses.
 
-Inputs use absolute values where possible: ticks, tiles, joules, watts, HP and inventory slots. Native coefficients are retained when the underlying mechanism needs them. Numeric guards follow documented widths/constraints, with positive floors for intervals and a million-tile spatial guard. These are not balance limits or performance guarantees. Huge ranges, radii, repeat counts and branches can exhaust memory/CPU. A prior 10,000-tile actual-map attempt exceeded the test runner's 2 GiB memory guard; successful prototype loading at that range does not prove playable operation.
+| Parameter                                   |                  Minimum |                Maximum |
+| ------------------------------------------- | -----------------------: | ---------------------: |
+| Ordinary targeting range                    | Native minimum range + 1 |              256 tiles |
+| Artillery automatic range                   |                       33 |            1,024 tiles |
+| Artillery manual range                      |                       33 |            4,096 tiles |
+| Shared railgun line length                  |                        1 |              256 tiles |
+| Shot interval                               |                   1 tick |            3,600 ticks |
+| Damage coefficient                          |                        0 |                     10 |
+| Ammo coefficient, single-round magazines    |                        0 |                      1 |
+| Ammo coefficient, other supported magazines |                        0 |                     10 |
+| Flamethrower turret fluid/shot              |                        0 |               10 units |
+| Electrical energy/shot                      |                        0 | 100,000,000 J (100 MJ) |
+| Tesla chain jumps                           |                        1 |                     16 |
+| Artillery cannon rotation speed (shared)    |               1 degree/s |          360 degrees/s |
+| Shared artillery shell damage radius        |                0.5 tiles |               32 tiles |
 
-The catalog deliberately does not alter prototype identifiers, visual/audio resources, masks, recipe/technology definitions, general production, transport movement engines, or enemy-only combat prototypes. Optional fields without a reliable independent scalar interpretation are documented rather than fabricated. Several native options have conditional effects depending on target type/state; a registered setting is not a promise that the condition always occurs.
+Unchanged blind spots give these ordinary range floors: flamethrower turret **7**, rocket turret **16**, railgun turret **4.5**, handheld/tank flamethrower **4**, tank cannon **6**, all remaining ordinary weapons **1** tile. Single-round consumers are rockets, cannon shells, artillery shells and railgun ammunition. Native per-shot debits are capped at magazine size; an ammo coefficient above 1 would not reliably spend multiple single-round items per shot, so it is not offered.
 
-## Validation
+Range, firing frequency and chain effects can increase CPU/memory use. These bounds reduce extreme inputs; they are not a measured large-factory performance guarantee. A 256-tile circle is about 202 times the area of an 18-tile circle. Native quality/research/ammo bonuses can take effective range above an input ceiling and can reduce effective intervals below one tick. Numerous fast-firing turrets can still be expensive. Increase range, rate and jumps gradually when testing an existing factory.
 
-See [TESTING.md](TESTING.md) for the distinction between prototype checks and actual combat tests.
+## Meaning and interaction of settings
+
+1. **Startup values replace the corresponding base values.** They are not multipliers on every vanilla number. A damage coefficient of 1 is not neutral for the laser turret (default 2) or combat shotgun (default 1.5). A smaller interval means faster fire; 6 ticks gives a base 10 shots/s, while 60 ticks gives 1 shot/s. Actual rates also depend on power, ammo, turning, preparation and native reloading.
+2. **Native bonuses apply afterward.** Weapon damage coefficients combine with native ammo/actions, research and relevant quality effects; target resistances still apply. No fixed final damage or global override is imposed. A zero damage coefficient does not disable firing or native non-damage effects. Native ammo range/cooldown modifiers remain; ammo range modifiers do not extend artillery in this engine.
+3. **Local settings stay local.** Gun/turret settings do not rewrite shared projectile, beam, stream or ammo damage. A turret range increase extends an insufficient embedded beam limit and explicit preparation radius only on that turret. Increasing an electrical shot cost expands only that turret's energy buffer when necessary, preserving vanilla headroom. Input power, idle drain and flow limits stay unchanged; sustained fire can become power-limited.
+4. **Artillery is explicitly shared.** Both turret and wagon use the configured automatic range, interval, damage and ammo cost. Manual range is an independent absolute base input; changing automatic range alone keeps the base manual input at 560. The mod derives both entities' native manual-range ratio. Manual range may be below automatic range. Native research/quality continue to modify the resulting behavior. The turret and wagon share one cannon rotation control in degrees/second (1-360, default 21.6); it does not change shot intervals, post-shot turning delay, parking or wagon travel. The shared shell radius (0.5-32, default 4 tiles) changes both physical and explosion damage coverage for both entities. It is a radius, not diameter. Visual effects, map reveal and damage per target remain unchanged. Radius 32 covers 64 times the area of vanilla radius 4, potentially affecting more entities and increasing CPU work and native collateral damage.
+5. **Railguns have two distance limits.** Each railgun has its own targeting range; the explicit shared ammunition line-length setting affects both handheld and turret railguns. To engage at 70 tiles, set the relevant targeting range and shared line length to at least 70. Quality range alone does not rewrite that line length. The line can also hit entities along its path according to native rules.
+6. **Resources use native accounting.** Ammo 1 generally means one round, not an entire magazine; 0.5 means reduced expenditure, including one single-round item per two shots. Ammo 0 still needs compatible ammunition loaded. Fluid cost is per shot, not per second; native fuel checks and oil damage bonuses remain. Energy cost is J/shot, not idle watts; zero shot cost does not remove idle drain. Shot costs do not create supplies or change loading requirements.
+7. **Spidertron uses one shared group.** Range, interval, damage coefficient and ammo coefficient each apply to all four native launchers. Interval is per launcher and ammo cost is per shot, not a combined total for the vehicle. Other rocket weapons remain independent.
+8. **Tesla chains remain separate.** Each Tesla setting edits only its own chain's maximum jumps. Native jump reach, branching and quality-dependent forking remain, so this value is not a guaranteed total number of unique targets.
+
+There are no global enable switches, category overrides or hidden experimental fallbacks. Unchanged settings do not write optional native fields. Third-party mod compatibility is outside the supported scope.
+
+## Upgrade from v0.2.0
+
+Only the four core `cr-gun-turret-*` identifiers are retained from its gun turret interface. Other public identifiers use `cr-<weapon>-<parameter>`; experimental long-path IDs have been removed. Old experimental settings are not migrated to new fields. Review startup settings after upgrading; removed fields return to native behavior and changed IDs start at public defaults unless configured.
+
+The [experimental edition](experiments/README.md) retains the full research parameter set, generator and tests in one editable directory. One catalog file defines all experimental parameters, with one locale file per language. See its [parameter inventory](experiments/PARAMETERS.md) and [validation notes](experiments/TESTING.md). Public entry points never import it, and the release ZIP excludes experiments, tests, scripts and local references.
+
+## Validation and packaging
+
+See [TESTING.md](TESTING.md) for checks and their limits. No build commands or additional dependencies are required.
 
 ```sh
 python3 tests/run.py
-python3 tests/experimental.py
-python3 tests/mechanisms.py
+python3 scripts/package.py --output /path/to/combat-reconfigured_0.3.0.zip
 ```
 
-All tests use isolated mod/config/save directories and the installed Factorio 2.1.24 executable. Player saves and installed mods are not modified. No build commands or extra libraries are needed. `tests/run.py` accepts `--factorio` and `--data`; the additional catalog/mechanism checks currently target the macOS installation at `/Applications/factorio.app/Contents/MacOS/factorio`. Use `--keep /new/directory` on the regression/catalog runner to retain logs. The runners enforce a 60-second process timeout and 2 GiB resident-memory guard.
-
-## Files and maintenance
-
-- `prototypes/gun-turret-settings.lua`: retained original gun turret controls.
-- `prototypes/catalog.lua`: explicit catalog entries, safe to prune individually.
-- `settings.lua`: native startup registration and feature gating.
-- `data-final-fixes.lua`, `prototypes/apply-catalog.lua`: changed-value-only application and dependency handling.
-- `locale/en/`, `locale/zh-CN/`: names and descriptions.
-- `PARAMETERS.md`: independent English inventory for later selection.
-- `tests/`: regression scenarios and catalog mappings; `tests/catalog.json` is the readable test manifest.
-- `scripts/catalog.py`: development-only catalog refresher using official dumps and matching API, not third-party mods. No build step is required to use or edit the committed catalog.
-
-The refresher takes `--base`, `--space-age` and `--api` paths to official JSON exports. `temp/` is local reference material, ignored by Git and excluded from installation ZIPs. Only `changelog.txt` is maintained. This internal iteration is not automatically committed, pushed or published.
+The test runner accepts `--factorio`, `--data` and `--keep /new/directory`. Packaging uses an explicit allowlist. `prototypes/weapons.lua` defines public inputs; `settings.lua` registers them; `data-final-fixes.lua` applies changed values only. Only `changelog.txt` is maintained.
 
 ## Official references
 
-- [Factorio API](https://lua-api.factorio.com/latest/index.html), matched to the local 2.1.24 offline API and installed official data.
-- [Attack parameters](https://lua-api.factorio.com/latest/types/BaseAttackParameters.html), [ammo type](https://lua-api.factorio.com/latest/types/AmmoType.html), [fluid turrets](https://lua-api.factorio.com/latest/prototypes/FluidTurretPrototype.html), [artillery turrets](https://lua-api.factorio.com/latest/prototypes/ArtilleryTurretPrototype.html), and [tesla chains](https://lua-api.factorio.com/latest/prototypes/ChainActiveTriggerPrototype.html).
+Validated against the installed official data and matching 2.1.24 API: [attack parameters](https://lua-api.factorio.com/latest/types/BaseAttackParameters.html), [ammo types](https://lua-api.factorio.com/latest/types/AmmoType.html), [artillery turrets](https://lua-api.factorio.com/latest/prototypes/ArtilleryTurretPrototype.html), and [Tesla chains](https://lua-api.factorio.com/latest/prototypes/ChainActiveTriggerPrototype.html), [artillery wagons](https://lua-api.factorio.com/latest/prototypes/ArtilleryWagonPrototype.html), and [area triggers](https://lua-api.factorio.com/latest/types/AreaTriggerItem.html).

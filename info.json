@@ -1,10 +1,10 @@
 {
   "name": "combat-reconfigured",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "title": "Combat Reconfigured",
   "author": "Astro704",
-  "homepage": "",
-  "description": "Experimental startup configuration for vanilla and Space Age weapons, turrets, ammunition, combat effects, vehicles and defenses. Defaults preserve official behavior. English and Simplified Chinese.",
+  "homepage": "https://github.com/AaaRynt/combat-reconfigured",
+  "description": "Configure core range, firing interval, damage and resource costs for vanilla guns and turrets. Supports Space Age, vehicle weapons, artillery and selected special mechanics. Defaults preserve vanilla behavior.",
   "factorio_version": "2.1",
   "dependencies": [
     "base >= 2.1.24"

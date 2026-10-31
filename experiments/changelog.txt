@@ -1,0 +1,9 @@
+---------------------------------------------------------------------------------------------------
+Version: 0.0.0
+Date: 2026-10-31
+  Changes:
+    - Provide the full editable research edition for Factorio 2.1 and Space Age, with 1777 base / 2348 Space Age settings.
+    - Cover guns, turrets, vehicles, ammunition, combat effects, capsules, robots, equipment, armor and defenses.
+    - Define all parameters in prototypes/catalog.lua, with one complete locale file per language.
+    - Include the generator, parameter inventory and integration tests for research and further development.
+    - Keep experimental content separate from the public installation ZIP.

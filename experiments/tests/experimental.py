@@ -65,9 +65,9 @@ def main():
     locales=[]
     for language in ['en','zh-CN']:
         cfg=configparser.ConfigParser(interpolation=None,delimiters=('=',),strict=True)
-        cfg.read(ROOT/'locale'/language/'catalog.cfg')
+        cfg.read(ROOT/'locale'/language/'settings.cfg')
         assert set(cfg['mod-setting-name']) == set(cfg['mod-setting-description'])
-        assert set(cfg['mod-setting-name']) == {e['name'] for e in CATALOG['entries']}
+        assert set(cfg['mod-setting-name']) == {e['name'] for e in CATALOG['entries']} | {name for name in cfg['mod-setting-name'] if name.startswith('cr-gun-turret-')}
         locales.append(set(cfg['mod-setting-name']))
     assert locales[0] == locales[1]
 

@@ -1,5 +1,5 @@
 -- Only explicitly changed startup values are written. No runtime scanning or entity replacement.
-local catalog = require("prototypes.catalog")
+local catalog = require("prototypes.catalog").catalog
 local changed, explicit = {}, {}
 
 local function parent_at(root, path)

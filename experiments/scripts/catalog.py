@@ -331,7 +331,7 @@ def main():
   for n,prototype in records.items():
    for ref in set(refs(prototype)):reverse.setdefault(ref,set()).add(k+'/'+n)
  entries=[]; groups=[]; omitted={}; used=set()
- legacy_src=(ROOT/'prototypes/gun-turret-settings.lua').read_text()
+ legacy_src=(ROOT/'prototypes/catalog.lua').read_text().split('-- Generated additional settings.')[0]
  legacy_paths={}
  for line in legacy_src.splitlines():
   m=re.search(r'key = "([^"]+)"',line)
@@ -489,7 +489,7 @@ def main():
   covered={e['path'][0] for e in groupentries}
   omitted[kind+'/'+name]=sorted(k for k in p if k not in covered)
  # Persist plain data: easy to delete individual settings without introducing runtime discovery.
- (ROOT/'prototypes/catalog.lua').write_text('-- Reviewed Factorio 2.1.24 experimental settings. Refreshed by scripts/catalog.py.\nreturn {\n'+',\n'.join('  '+lua({k:v for k,v in e.items() if k not in ['label','zh','description','description_zh','shared']}) for e in entries)+'\n}\n')
+ (ROOT/'prototypes/catalog.lua').write_text(legacy_src.rstrip()+'\n\n-- Generated additional settings. Refreshed by scripts/catalog.py.\nlocal catalog = {\n'+',\n'.join('  '+lua({k:v for k,v in e.items() if k not in ['label','zh','description','description_zh','shared']}) for e in entries)+'\n}\n\nreturn {gun_turret=definitions, catalog=catalog}\n')
  (ROOT/'tests/catalog.json').write_text(json.dumps(dict(entries=entries,groups=groups,omitted=omitted),indent=2,ensure_ascii=False)+'\n')
  for language in ['en','zh-CN']:
   lines=['[mod-setting-name]']
@@ -508,12 +508,24 @@ def main():
   for e in entries:
    for choice in e.get('allowed',[]):
     labels=choices[choice];lines.append(e['name']+'-'+choice+'='+labels[0 if language=='en' else 1])
-  (ROOT/'locale'/language/'catalog.cfg').write_text('\n'.join(lines)+'\n')
+  import configparser, io
+  merged=configparser.ConfigParser(interpolation=None,delimiters=('=',));merged.optionxform=str
+  merged.read(ROOT/'locale'/language/'settings.cfg')
+  for section in ['mod-setting-name','mod-setting-description','string-mod-setting']:
+   for key in list(merged[section]):
+    if not key.startswith('cr-gun-turret-'):del merged[section][key]
+  generated=configparser.ConfigParser(interpolation=None,delimiters=('=',));generated.optionxform=str
+  generated.read_string('\n'.join(lines))
+  for section in generated.sections():
+   for key,value in generated[section].items():merged[section][key]=value
+  output=io.StringIO();merged.write(output,space_around_delimiters=False)
+  (ROOT/'locale'/language/'settings.cfg').write_text(output.getvalue().rstrip()+'\n')
  # Include the retained legacy settings with their original user-facing explanations.
  import configparser
  cfg=configparser.ConfigParser(interpolation=None,delimiters=('=',));cfg.read(ROOT/'locale/en/settings.cfg')
- doc=['# Combat Reconfigured experimental parameter inventory','','Official source: Factorio 2.1.24 base + Space Age prototype dumps and matching API. All defaults are no-ops. Native research/quality remain active. Paths with numeric components use Lua one-based array indices. Energy settings use absolute joules or watts; 60 ticks = one second.','','## Retained gun turret controls','','The original 51 `cr-gun-turret-*` settings remain unchanged. The additional catalog avoids overlapping their paths.','', '| Setting | Default | Meaning |','| --- | --- | --- |']
+ doc=['# Combat Reconfigured experimental parameter inventory','','See the [experimental README](README.md) and [validation notes](TESTING.md).','','Official source: Factorio 2.1.24 base + Space Age prototype dumps and matching API. All defaults are no-ops. Native research/quality remain active. Paths with numeric components use Lua one-based array indices. Energy settings use absolute joules or watts; 60 ticks = one second.','','## Retained gun turret controls','','These 51 `cr-gun-turret-*` controls share `prototypes/catalog.lua` with all additional settings. Their specialized conversions are preserved, and the generated entries avoid overlapping their paths.','', '| Setting | Default | Meaning |','| --- | --- | --- |']
  for key,text in cfg['mod-setting-description'].items():
+  if not key.startswith('cr-gun-turret-'):continue
   default=re.search(r'Default: ([^.]+(?:\.[0-9]+)?)',text)
   doc.append('| `'+key+'` | '+(default[1] if default else 'See description')+' | '+text.replace('|','/')+' |')
  doc+=['','## Catalog summary','',f'{len(entries)} additional settings across {len(groups)} prototype records; {len(entries)+51} settings total with Space Age. Only available official content is registered.','', '| Prototype family | Records | Settings |','| --- | ---: | ---: |']

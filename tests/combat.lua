@@ -41,11 +41,11 @@ script.on_init(function()
     }
     assert(turret)
     turret.insert{name = "firearm-magazine", count = 20}
-    assert(#turret.get_inventory(defines.inventory.turret_ammo) == setting("inventory-size"))
+    assert(#turret.get_inventory(defines.inventory.turret_ammo) == 1)
     local expected_health = prototypes.entity["gun-turret"].get_max_health(definition.quality)
     assert(math.abs(turret.max_health - expected_health) < 0.01)
-    if definition.quality == "normal" then assert(expected_health == setting("max-health")) end
-    if definition.quality == "legendary" then assert(expected_health > setting("max-health")) end
+    if definition.quality == "normal" then assert(expected_health == 400) end
+    if definition.quality == "legendary" then assert(expected_health == 1000) end
     local target = surface.create_entity{
       name = "gun-turret", position = {x, -definition.distance}, force = "enemy"
     }

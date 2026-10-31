@@ -1,10 +1,12 @@
 # Combat Reconfigured experimental parameter inventory
 
+See the [experimental README](README.md) and [validation notes](TESTING.md).
+
 Official source: Factorio 2.1.24 base + Space Age prototype dumps and matching API. All defaults are no-ops. Native research/quality remain active. Paths with numeric components use Lua one-based array indices. Energy settings use absolute joules or watts; 60 ticks = one second.
 
 ## Retained gun turret controls
 
-The original 51 `cr-gun-turret-*` settings remain unchanged. The additional catalog avoids overlapping their paths.
+These 51 `cr-gun-turret-*` controls share `prototypes/catalog.lua` with all additional settings. Their specialized conversions are preserved, and the generated entries avoid overlapping their paths.
 
 | Setting | Default | Meaning |
 | --- | --- | --- |

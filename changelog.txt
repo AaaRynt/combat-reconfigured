@@ -1,4 +1,22 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.0
+Date: 2026-10-31
+  Changes:
+    - Reduce the v0.2.0 experimental interface from 1777 base / 2348 Space Age settings to 63 / 87 focused public settings.
+    - Focus on maximum range, shot interval, weapon damage and native resource costs; keep exactly four controls for the gun turret.
+    - Cover native handheld, vehicle and Spidertron guns and all native turrets; exclude capsules, mines, combat robots, equipment, armor and general entity properties from public configuration.
+    - Configure all four Spidertron launchers through one shared range, interval, damage and ammo-cost group.
+    - Share artillery automatic/manual range, shot interval, damage, ammo cost, cannon rotation and shell damage radius between turret and wagon.
+    - Retain separate Tesla chain-jump controls and an explicitly shared railgun ammunition line-length control.
+    - Limit ordinary ranges to 256 tiles, artillery automatic/manual ranges to 1024/4096, shot intervals to 1-3600 ticks and Tesla chains to 16 jumps.
+    - Bound damage coefficients to 0-10, single-round ammo coefficients to 0-1, other ammo/fluid costs to 0-10 and electrical shot costs to 0-100 MJ.
+    - Bound artillery cannon rotation to 1-360 degrees/s and shell damage radius to 0.5-32 tiles; explain units, shared effects and performance limits in English and Simplified Chinese.
+    - Keep vanilla prototypes unchanged at defaults and preserve native research, quality and ammunition behavior.
+    - Retain the full research parameter set under experiments/, excluded from the public installation ZIP.
+    - Retain the four core gun turret setting IDs; other experimental IDs are not migrated to the focused public interface.
+    - Validate default equality, parameter bounds, shared-setting scope, native combat and resource costs in base game and Space Age, including installation from the release ZIP.
+
+---------------------------------------------------------------------------------------------------
 Version: 0.2.0
 Date: 2026-10-30
   Features:

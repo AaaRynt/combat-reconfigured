@@ -1,0 +1,12 @@
+{
+  "name": "combat-reconfigured",
+  "version": "0.0.0",
+  "title": "Combat Reconfigured (Experimental)",
+  "author": "Astro704",
+  "homepage": "https://github.com/AaaRynt/combat-reconfigured",
+  "description": "Experimental startup configuration for vanilla and Space Age weapons, turrets, ammunition, combat effects, vehicles and defenses. Defaults preserve official behavior. English and Simplified Chinese.",
+  "factorio_version": "2.1",
+  "dependencies": [
+    "base >= 2.1.24"
+  ]
+}
